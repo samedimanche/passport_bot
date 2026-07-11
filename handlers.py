@@ -35,7 +35,7 @@ async def photo_handler(message: Message, bot: Bot):
         await message.answer("⛔ У вас нет доступа к этому боту.")
         return
 
-    await message.answer("🔎 Распознаю, подождите несколько секунд...")
+    await message.answer("🔎 Распознаю, это может занять до минуты на бесплатном хостинге...")
 
     try:
         photo = message.photo[-1]  # самое большое разрешение
@@ -52,11 +52,16 @@ async def photo_handler(message: Message, bot: Bot):
 
     except Exception as e:
         logger.exception("Ошибка распознавания")
-        await message.answer(
-            "⚠️ Не удалось распознать фото. Попробуйте переснять при хорошем "
-            "освещении, без бликов, чтобы вся страница была в кадре.\n\n"
-            f"Техническая причина: {e}"
-        )
+        try:
+            await message.answer(
+                "⚠️ Не удалось распознать фото. Попробуйте переснять при хорошем "
+                "освещении, без бликов, чтобы вся страница была в кадре.\n\n"
+                f"Техническая причина: {str(e)[:200]}"
+            )
+        except Exception:
+            # если даже сообщение об ошибке не отправилось (например, из-за
+            # спецсимволов в тексте исключения) — шлём совсем простой текст
+            await message.answer("⚠️ Не удалось распознать фото. Попробуйте переснять фото.")
 
 
 def format_result(result: dict) -> str:

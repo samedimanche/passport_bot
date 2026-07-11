@@ -15,7 +15,10 @@ import numpy as np
 import pytesseract
 from PIL import Image
 
-from config import OCR_LANGS
+from config import OCR_LANGS, TESSERACT_CMD
+
+if TESSERACT_CMD:
+    pytesseract.pytesseract.tesseract_cmd = TESSERACT_CMD
 
 MRZ_CHARS = "A-Z0-9<"
 MRZ_LINE_RE = re.compile(rf"^[{MRZ_CHARS}]{{40,44}}$")
@@ -42,9 +45,13 @@ def _preprocess(image_bytes: bytes) -> np.ndarray:
 
     # увеличиваем, если фото маленькое — заметно улучшает OCR
     h, w = img.shape[:2]
-    if max(h, w) < 1800:
-        scale = 1800 / max(h, w)
+    if max(h, w) < 1400:
+        scale = 1400 / max(h, w)
         img = cv2.resize(img, None, fx=scale, fy=scale, interpolation=cv2.INTER_CUBIC)
+    elif max(h, w) > 2200:
+        # слишком большие фото тоже намеренно уменьшаем — иначе OCR очень долгий
+        scale = 2200 / max(h, w)
+        img = cv2.resize(img, None, fx=scale, fy=scale, interpolation=cv2.INTER_AREA)
 
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     gray = cv2.bilateralFilter(gray, 9, 75, 75)

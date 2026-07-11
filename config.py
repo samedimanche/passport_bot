@@ -21,4 +21,10 @@ WEBHOOK_URL = f"{WEBHOOK_HOST}{WEBHOOK_PATH}"
 PORT = int(os.getenv("PORT", "10000"))
 
 # Языки распознавания. Добавляйте нужные пакеты в Dockerfile, если нужны другие.
-OCR_LANGS = os.getenv("OCR_LANGS", "rus+eng+deu+fra+spa+ita+ukr")
+# Меньше языков = заметно быстрее OCR на слабом бесплатном CPU.
+# Добавляйте нужные языки через переменную окружения OCR_LANGS, например "rus+eng+deu".
+OCR_LANGS = os.getenv("OCR_LANGS", "rus+eng")
+
+# Только для локального запуска на Windows: путь к tesseract.exe,
+# если он не добавлен в PATH. На Render/Linux не нужен — оставить пустым.
+TESSERACT_CMD = os.getenv("TESSERACT_CMD", "")

@@ -2,7 +2,6 @@ import logging
 
 from aiohttp import web
 from aiogram import Bot, Dispatcher
-from aiogram.enums import ParseMode
 from aiogram.webhook.aiohttp_server import SimpleRequestHandler, setup_application
 
 from config import BOT_TOKEN, WEBHOOK_PATH, WEBHOOK_URL, PORT
@@ -28,7 +27,7 @@ def create_app() -> web.Application:
     if not BOT_TOKEN:
         raise RuntimeError("Переменная окружения BOT_TOKEN не задана")
 
-    bot = Bot(token=BOT_TOKEN, parse_mode=ParseMode.HTML)
+    bot = Bot(token=BOT_TOKEN)
     dp = Dispatcher()
     dp.include_router(router)
     dp.startup.register(on_startup)
